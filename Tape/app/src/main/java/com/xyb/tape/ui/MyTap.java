@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -22,11 +24,15 @@ import java.util.List;
 public class MyTap extends View {
     private static final String TAG = "MyTap";
     int lineOffset = 40;
+    int indicatorHeight=200;
     int smallLineWidth = 5;
     int bigLineWidth = 10;
     int sortLineHeight = 50;
     int longLineHeight = 150;
     List<Float> kgs = new ArrayList<>();
+    Paint kgPaint=new Paint();
+    private Paint scalesPaint;
+    private Paint indicatorPaint;
 
     public MyTap(Context context) {
         super(context);
@@ -34,6 +40,15 @@ public class MyTap extends View {
 
     public MyTap(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        indicatorPaint=new Paint();
+        indicatorPaint.setColor(Color.GREEN);
+        indicatorPaint.setStrokeWidth(20);
+        indicatorPaint.setStrokeCap(Paint.Cap.ROUND);
+
+        scalesPaint = new Paint();
+        scalesPaint.setStrokeCap(Paint.Cap.ROUND);
+        scalesPaint.setColor(Color.GRAY);
+
         Float startKg = 30f;
         Float endKg = 100f;
         float needKg = startKg;
@@ -41,6 +56,8 @@ public class MyTap extends View {
             needKg = needKg + 0.1f;
             kgs.add(needKg);
         }
+        kgPaint.setTextSize(48);
+
     }
 
     public MyTap(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -50,10 +67,10 @@ public class MyTap extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Paint paint = new Paint();
 
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setColor(Color.GREEN);
+        canvas.drawLine(getWidth()/2,0,getWidth()/2,indicatorHeight,indicatorPaint);
+
+
         int startX = 0;
         int startY = 0;
         int endY = 0;
@@ -62,24 +79,38 @@ public class MyTap extends View {
             float nowKg = kgs.get(i);
             if (isLongLine(nowKg)) {
                 endY = startY + longLineHeight;
-                paint.setStrokeWidth(bigLineWidth);
+                scalesPaint.setStrokeWidth(bigLineWidth);
+                String showKg=zeroXiaoshu(nowKg);
+
+                Rect rect=new Rect();
+                kgPaint.getTextBounds(showKg,0,showKg.length(),rect);
+                canvas.drawText(showKg,startX-rect.width()/2,endY+rect.height()+20,kgPaint);
             } else {
                 endY = startY + sortLineHeight;
-                paint.setStrokeWidth(smallLineWidth);
+                scalesPaint.setStrokeWidth(smallLineWidth);
             }
-            canvas.drawLine(startX, 0, startX, endY, paint);
+            canvas.drawLine(startX, 0, startX, endY, scalesPaint);
             Log.i(TAG, "onDraw: " + nowKg);
             startX += lineOffset;
         }
     }
 
     private boolean isLongLine(float value) {
-        BigDecimal bigDecimal = new BigDecimal(value);
-        String resS = bigDecimal.setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+        String resS = oneXiaoshu(value);
         String[] splits = resS.split("\\.");
         if (splits[1].equals("0")) {
             return true;
         }
         return false;
+    }
+
+    private String oneXiaoshu(float value) {
+        BigDecimal bigDecimal = new BigDecimal(value);
+        return bigDecimal.setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+    }
+
+    private String zeroXiaoshu(float value) {
+        BigDecimal bigDecimal = new BigDecimal(value);
+        return bigDecimal.setScale(0, BigDecimal.ROUND_HALF_UP).toString();
     }
 }
