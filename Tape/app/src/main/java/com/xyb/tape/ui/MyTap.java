@@ -5,11 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,7 +19,7 @@ import java.util.List;
  * @author xyb
  */
 
-public class MyTap extends View {
+public class MyTap extends HorizontalScrollFling {
     private static final String TAG = "MyTap";
     int lineOffset = 40;
     int indicatorHeight=200;
@@ -68,7 +66,8 @@ public class MyTap extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawLine(getWidth()/2,0,getWidth()/2,indicatorHeight,indicatorPaint);
+        canvas.drawLine(getScrollX()+getWidth()/2,0,getScrollX()+getWidth()/2,indicatorHeight,indicatorPaint);
+
 
 
         int startX = 0;
