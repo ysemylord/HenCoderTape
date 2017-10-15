@@ -4,10 +4,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context="com.xyb.tape.MainActivity">
 
+    <TextView
+        android:layout_gravity="center_horizontal"
+        android:textSize="18sp"
+        android:id="@+id/kg_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <com.xyb.tape.ui.MyTap
+        android:id="@+id/my_tap"
         android:background="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="80dp"/>

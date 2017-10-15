@@ -32,6 +32,7 @@ public class MyTap extends HorizontalScrollFling {
     private Paint scalesPaint;
     private Paint indicatorPaint;
     private int tapWidth;
+    private OuterInterface mOuterInterface;
 
     public MyTap(Context context) {
         super(context);
@@ -128,6 +129,17 @@ public class MyTap extends HorizontalScrollFling {
         super.onScrollChanged(l, t, oldl, oldt);
         int num=getScrollX()/lineOffset;
         float kg=kgs.get(num);
+        if (mOuterInterface != null) {
+            mOuterInterface.nowKg(oneXiaoshu(kg));
+        }
         Log.i(TAG, "now kg is "+kg);
+    }
+
+    public interface OuterInterface{
+         void nowKg(String nowKG);
+    }
+
+    public void setmOuterInterface(OuterInterface mOuterInterface) {
+        this.mOuterInterface = mOuterInterface;
     }
 }
