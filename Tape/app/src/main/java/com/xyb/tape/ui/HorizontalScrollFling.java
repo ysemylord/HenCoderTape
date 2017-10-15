@@ -24,6 +24,11 @@ public class HorizontalScrollFling extends FrameLayout {
     private Scroller mScroller;
     private VelocityTracker mVelocityTracker;
 
+    protected int minScorll, maxScroll;
+    protected int oneSetp;//滑动的最小步长
+    private int currentScroll;
+
+
     public HorizontalScrollFling(Context context) {
         this(context, null);
     }
@@ -89,11 +94,16 @@ public class HorizontalScrollFling extends FrameLayout {
                 mScroller.fling(
                         getScrollX(), getScrollY(),
                         -(int) xvel, 0,//数据设为计算出的速度的相反值
-                        -1000, 1000,
+                        minScorll, maxScroll,
                         0, 0);
+
+
 
                 mPointActivtyId = -1;
                 mLastX = -1;
+
+                currentScroll=getScrollY();
+                postDelayed(scrollCheckTask, 300);
                 break;
             case MotionEvent.ACTION_CANCEL:
                 mPointActivtyId = -1;
@@ -111,8 +121,44 @@ public class HorizontalScrollFling extends FrameLayout {
             int currX = mScroller.getCurrX();
             Log.i(TAG, "computeScroll: " + currX);
             scrollTo(currX, mScroller.getCurrY());
+
+            currentScroll=getScrollY();
+            postDelayed(scrollCheckTask, 300);
             invalidate();
             Log.i(TAG, "computeScroll: 重绘");
         }
     }
+
+    public void setMinScorll(int minScorll) {
+        this.minScorll = minScorll;
+    }
+
+    public void setMaxScroll(int maxScroll) {
+        this.maxScroll = maxScroll;
+    }
+
+    public void setOneSetp(int oneSetp) {
+        this.oneSetp = oneSetp;
+    }
+
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+
+
+    }
+
+    Runnable scrollCheckTask = new Runnable() {
+        @Override
+        public void run() {
+            int newScroll = getScrollY();
+            if(currentScroll==newScroll){
+                int more=getScrollX()%oneSetp;
+                scrollBy(-more,0);
+                Log.i(TAG, "run: 滚动结束"+more);
+            }
+        }
+    };
+
+
 }

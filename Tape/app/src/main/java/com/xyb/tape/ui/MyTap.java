@@ -31,6 +31,7 @@ public class MyTap extends HorizontalScrollFling {
     Paint kgPaint=new Paint();
     private Paint scalesPaint;
     private Paint indicatorPaint;
+    private int tapWidth;
 
     public MyTap(Context context) {
         super(context);
@@ -48,13 +49,18 @@ public class MyTap extends HorizontalScrollFling {
         scalesPaint.setColor(Color.GRAY);
 
         Float startKg = 30f;
-        Float endKg = 100f;
+        Float endKg = 37f;
         float needKg = startKg;
-        while (needKg <= endKg) {
-            needKg = needKg + 0.1f;
+        while (needKg <=endKg) {
             kgs.add(needKg);
+            needKg = needKg + 0.1f;
         }
         kgPaint.setTextSize(48);
+
+
+        setOneSetp(lineOffset);
+
+
 
     }
 
@@ -70,7 +76,7 @@ public class MyTap extends HorizontalScrollFling {
 
 
 
-        int startX = 0;
+        int startX = getWidth()/2;//从屏幕中间开始绘制刻度
         int startY = 0;
         int endY = 0;
 
@@ -91,7 +97,11 @@ public class MyTap extends HorizontalScrollFling {
             canvas.drawLine(startX, 0, startX, endY, scalesPaint);
             Log.i(TAG, "onDraw: " + nowKg);
             startX += lineOffset;
+
+
         }
+        setMinScorll(0);
+        setMaxScroll(startX-getWidth()/2-lineOffset);
     }
 
     private boolean isLongLine(float value) {
@@ -111,5 +121,13 @@ public class MyTap extends HorizontalScrollFling {
     private String zeroXiaoshu(float value) {
         BigDecimal bigDecimal = new BigDecimal(value);
         return bigDecimal.setScale(0, BigDecimal.ROUND_HALF_UP).toString();
+    }
+
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+        int num=getScrollX()/lineOffset;
+        float kg=kgs.get(num);
+        Log.i(TAG, "now kg is "+kg);
     }
 }
