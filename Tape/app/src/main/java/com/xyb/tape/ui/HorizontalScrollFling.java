@@ -50,8 +50,6 @@ public class HorizontalScrollFling extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (mTouchSlop < 0) {
-            //getScaledTouchSlop()，一个距离常量，用来判断用户的行为是否是滑动。手势滑动的距离大于这个值
-            //就认为是滑动。
             mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
         }
 
@@ -59,7 +57,6 @@ public class HorizontalScrollFling extends FrameLayout {
         if (mScroller == null) {
             mScroller = new Scroller(getContext());
         }
-        //int action = MotionEventCompat.getActionMasked(event);
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -82,7 +79,7 @@ public class HorizontalScrollFling extends FrameLayout {
                 }
                 float x = event.getX(pointIndex);
                 float dx = x - mLastX;
-                scrollBy((int) -dx,0 );
+                scrollBy((int) -dx, 0);
                 mLastX = x;
 
                 break;
@@ -113,8 +110,8 @@ public class HorizontalScrollFling extends FrameLayout {
     }
 
     private void startScroll() {
-        currentScroll=getScrollX();
-        Log.i(TAG, "startScroll: currentScroll:"+currentScroll);
+        currentScroll = getScrollX();
+        Log.i(TAG, "startScroll: currentScroll:" + currentScroll);
         postDelayed(scrollCheckTask, 30);
     }
 
@@ -126,21 +123,34 @@ public class HorizontalScrollFling extends FrameLayout {
             Log.i(TAG, "computeScroll: " + currX);
             scrollTo(currX, mScroller.getCurrY());
 
-           /* currentScroll=getScrollY();
-            postDelayed(scrollCheckTask, 300);*/
             invalidate();
             Log.i(TAG, "computeScroll: 重绘");
         }
     }
 
+    /**
+     * 设置最小的偏移量
+     *
+     * @param minScorll
+     */
     public void setMinScorll(int minScorll) {
         this.minScorll = minScorll;
     }
 
+    /**
+     * 设置最大的偏移量
+     *
+     * @param maxScroll
+     */
     public void setMaxScroll(int maxScroll) {
         this.maxScroll = maxScroll;
     }
 
+    /**
+     * 设置每次滑动必须为oneStep的整数倍
+     *
+     * @param oneSetp
+     */
     public void setOneSetp(int oneSetp) {
         this.oneSetp = oneSetp;
     }
@@ -152,20 +162,23 @@ public class HorizontalScrollFling extends FrameLayout {
 
     }
 
+    /**
+     * 停止滑动后对偏移量进行调整，使偏移量为oneStep的整数倍
+     */
     Runnable scrollCheckTask = new Runnable() {
         @Override
         public void run() {
             int newScroll = getScrollX();
-            Log.i(TAG, "startScroll: newScroll:"+newScroll);
-            if(currentScroll==newScroll){
-                int more=getScrollX()%oneSetp;
-                if(more<oneSetp/2) {
+            Log.i(TAG, "startScroll: newScroll:" + newScroll);
+            if (currentScroll == newScroll) {
+                int more = getScrollX() % oneSetp;
+                if (more < oneSetp / 2) {
                     scrollBy(-more, 0);
-                }else{
-                    scrollBy(oneSetp-more, 0);
+                } else {
+                    scrollBy(oneSetp - more, 0);
                 }
-                Log.i(TAG, "run: 滚动结束"+more);
-            }else{
+                Log.i(TAG, "run: 滚动结束" + more);
+            } else {
                 startScroll();
                 Log.i(TAG, "run: 滚动未结束");
             }

@@ -16,8 +16,8 @@
         android:layout_height="wrap_content" />
 
     <com.xyb.tape.ui.MyTap
+        android:background="@android:color/white"
         android:id="@+id/my_tap"
-        android:background="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="80dp"/>
 
