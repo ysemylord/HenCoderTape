@@ -1,7 +1,8 @@
 # HenCoderTape
-Hencoder仿写界面<br>
+Hencoder仿写界面 效果图<br>
 
-###效果图
+
+## 效果图
 ![image](https://github.com/ysemylord/HenCoderTape/blob/master/SVID_20171016_142609.gif)
 
 ## 使用方法
