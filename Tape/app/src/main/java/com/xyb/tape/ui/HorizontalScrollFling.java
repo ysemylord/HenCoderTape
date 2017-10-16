@@ -81,7 +81,15 @@ public class HorizontalScrollFling extends FrameLayout {
                 }
                 float x = event.getX(pointIndex);
                 float dx = x - mLastX;
+                int diffMin=getScrollX()-minScorll;
+                int diffMax=maxScroll-getScrollX();
+                if(dx>diffMin&&dx>0){
+                    dx=diffMin;
+                }else if(Math.abs(dx)>diffMax&&dx<0){
+                    dx=diffMax;
+                }
                 scrollBy((int) -dx, 0);
+
                 mLastX = x;
 
                 break;
@@ -91,11 +99,13 @@ public class HorizontalScrollFling extends FrameLayout {
                         mPointActivtyId);
                 Log.i(TAG, "onTouchEvent: " + xvel);
 
-                mFlingScroller.fling(
-                        getScrollX(), getScrollY(),
-                        -(int) xvel, 0,//数据设为计算出的速度的相反值
-                        minScorll, maxScroll,
-                        0, 0);
+                if(Math.abs(xvel)>ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity()) {
+                    mFlingScroller.fling(
+                            getScrollX(), getScrollY(),
+                            -(int) xvel, 0,//数据设为计算出的速度的相反值
+                            minScorll, maxScroll,
+                            0, 0);
+                }
                 startScroll();
                 mPointActivtyId = -1;
                 mLastX = -1;
