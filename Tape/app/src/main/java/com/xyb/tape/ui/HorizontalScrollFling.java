@@ -154,7 +154,11 @@ public class HorizontalScrollFling extends FrameLayout {
             int newScroll = getScrollY();
             if(currentScroll==newScroll){
                 int more=getScrollX()%oneSetp;
-                scrollBy(-more,0);
+                if(more<oneSetp/2) {
+                    scrollBy(-more, 0);
+                }else{
+                    scrollBy(oneSetp-more, 0);
+                }
                 Log.i(TAG, "run: 滚动结束"+more);
             }
         }
