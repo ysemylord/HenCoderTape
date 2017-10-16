@@ -96,7 +96,7 @@ public class MyTap extends HorizontalScrollFling {
                 scalesPaint.setStrokeWidth(smallLineWidth);
             }
             canvas.drawLine(startX, 0, startX, endY, scalesPaint);
-            Log.i(TAG, "onDraw: " + nowKg);
+           // Log.i(TAG, "onDraw: " + nowKg);
             startX += lineOffset;
 
 
@@ -127,12 +127,17 @@ public class MyTap extends HorizontalScrollFling {
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
-        int num=getScrollX()/lineOffset;
-        float kg=kgs.get(num);
-        if (mOuterInterface != null) {
-            mOuterInterface.nowKg(oneXiaoshu(kg));
+        try {
+
+            int num = getScrollX() / lineOffset;
+            float kg = kgs.get(num);
+            if (mOuterInterface != null) {
+                mOuterInterface.nowKg(oneXiaoshu(kg));
+            }
+            Log.i(TAG, "now kg is " + kg);
+        }catch (IndexOutOfBoundsException e){
+            Log.e(TAG, "超出数组长度" );
         }
-        Log.i(TAG, "now kg is "+kg);
     }
 
     public interface OuterInterface{

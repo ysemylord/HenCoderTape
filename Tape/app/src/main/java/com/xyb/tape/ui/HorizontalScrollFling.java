@@ -91,19 +91,17 @@ public class HorizontalScrollFling extends FrameLayout {
                 float xvel = VelocityTrackerCompat.getXVelocity(mVelocityTracker,
                         mPointActivtyId);
                 Log.i(TAG, "onTouchEvent: " + xvel);
+
                 mScroller.fling(
                         getScrollX(), getScrollY(),
                         -(int) xvel, 0,//数据设为计算出的速度的相反值
                         minScorll, maxScroll,
                         0, 0);
-
-
-
+                startScroll();
                 mPointActivtyId = -1;
                 mLastX = -1;
 
-                currentScroll=getScrollY();
-                postDelayed(scrollCheckTask, 300);
+
                 break;
             case MotionEvent.ACTION_CANCEL:
                 mPointActivtyId = -1;
@@ -114,6 +112,12 @@ public class HorizontalScrollFling extends FrameLayout {
         return true;
     }
 
+    private void startScroll() {
+        currentScroll=getScrollX();
+        Log.i(TAG, "startScroll: currentScroll:"+currentScroll);
+        postDelayed(scrollCheckTask, 30);
+    }
+
     @Override
     public void computeScroll() {
         super.computeScroll();
@@ -122,8 +126,8 @@ public class HorizontalScrollFling extends FrameLayout {
             Log.i(TAG, "computeScroll: " + currX);
             scrollTo(currX, mScroller.getCurrY());
 
-            currentScroll=getScrollY();
-            postDelayed(scrollCheckTask, 300);
+           /* currentScroll=getScrollY();
+            postDelayed(scrollCheckTask, 300);*/
             invalidate();
             Log.i(TAG, "computeScroll: 重绘");
         }
@@ -151,7 +155,8 @@ public class HorizontalScrollFling extends FrameLayout {
     Runnable scrollCheckTask = new Runnable() {
         @Override
         public void run() {
-            int newScroll = getScrollY();
+            int newScroll = getScrollX();
+            Log.i(TAG, "startScroll: newScroll:"+newScroll);
             if(currentScroll==newScroll){
                 int more=getScrollX()%oneSetp;
                 if(more<oneSetp/2) {
@@ -160,6 +165,9 @@ public class HorizontalScrollFling extends FrameLayout {
                     scrollBy(oneSetp-more, 0);
                 }
                 Log.i(TAG, "run: 滚动结束"+more);
+            }else{
+                startScroll();
+                Log.i(TAG, "run: 滚动未结束");
             }
         }
     };
