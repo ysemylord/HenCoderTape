@@ -62,6 +62,12 @@ public class HorizontalScrollFling extends FrameLayout {
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                if(!mAjustScroll.isFinished()){
+                    mAjustScroll.abortAnimation();
+                }
+                if(!mFlingScroller.isFinished()){
+                    mFlingScroller.abortAnimation();
+                }
                 int index = event.getActionIndex();
                 mPointActivtyId = event.getPointerId(index);
                 mLastX = event.getX();
@@ -137,7 +143,10 @@ public class HorizontalScrollFling extends FrameLayout {
 
             invalidate();
             Log.i(TAG, "computeScroll: 重绘");
-        }else if(mAjustScroll.computeScrollOffset()){
+        }
+
+        if(mAjustScroll.computeScrollOffset()){
+            mFlingScroller.abortAnimation();
             int currX = mAjustScroll.getCurrX();
             int currY = mAjustScroll.getCurrY();
             scrollTo(currX, currY);
