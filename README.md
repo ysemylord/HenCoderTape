@@ -3,7 +3,7 @@ Hencoder仿写界面 效果图<br>
 
 
 ## 效果图
-![image](https://github.com/ysemylord/HenCoderTape/blob/master/SVID_20171016_142609.gif)
+![image](https://github.com/ysemylord/HenCoderTape/blob/master/SVID_20171016_232721.gif)
 
 ## 使用方法
 
