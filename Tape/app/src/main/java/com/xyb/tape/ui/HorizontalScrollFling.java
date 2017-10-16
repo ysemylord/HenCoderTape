@@ -21,12 +21,13 @@ public class HorizontalScrollFling extends FrameLayout {
     private int mPointActivtyId = -1;
     private int mTouchSlop = -1;//用来判断手势移动的距离是否达到滑动的标准
     private float mLastX = -1;
-    private Scroller mScroller;
+    private Scroller mFlingScroller;
     private VelocityTracker mVelocityTracker;
 
     protected int minScorll, maxScroll;
     protected int oneSetp;//滑动的最小步长
     private int currentScroll;
+    private Scroller mAjustScroll;
 
 
     public HorizontalScrollFling(Context context) {
@@ -43,7 +44,8 @@ public class HorizontalScrollFling extends FrameLayout {
     }
 
     private void init() {
-        mScroller = new Scroller(getContext());
+        mFlingScroller = new Scroller(getContext());
+        mAjustScroll=new Scroller(getContext());
     }
 
 
@@ -54,8 +56,8 @@ public class HorizontalScrollFling extends FrameLayout {
         }
 
 
-        if (mScroller == null) {
-            mScroller = new Scroller(getContext());
+        if (mFlingScroller == null) {
+            mFlingScroller = new Scroller(getContext());
         }
         int action = event.getAction();
         switch (action) {
@@ -89,7 +91,7 @@ public class HorizontalScrollFling extends FrameLayout {
                         mPointActivtyId);
                 Log.i(TAG, "onTouchEvent: " + xvel);
 
-                mScroller.fling(
+                mFlingScroller.fling(
                         getScrollX(), getScrollY(),
                         -(int) xvel, 0,//数据设为计算出的速度的相反值
                         minScorll, maxScroll,
@@ -118,13 +120,19 @@ public class HorizontalScrollFling extends FrameLayout {
     @Override
     public void computeScroll() {
         super.computeScroll();
-        if (mScroller.computeScrollOffset()) {
-            int currX = mScroller.getCurrX();
+        if (mFlingScroller.computeScrollOffset()) {
+            int currX = mFlingScroller.getCurrX();
             Log.i(TAG, "computeScroll: " + currX);
-            scrollTo(currX, mScroller.getCurrY());
+            scrollTo(currX, mFlingScroller.getCurrY());
 
             invalidate();
             Log.i(TAG, "computeScroll: 重绘");
+        }else if(mAjustScroll.computeScrollOffset()){
+            int currX = mAjustScroll.getCurrX();
+            int currY = mAjustScroll.getCurrY();
+            scrollTo(currX, currY);
+            invalidate();
+            Log.i(TAG, "mAjustScroll computeScroll currX :"+currX);
         }
     }
 
@@ -173,10 +181,13 @@ public class HorizontalScrollFling extends FrameLayout {
             if (currentScroll == newScroll) {
                 int more = getScrollX() % oneSetp;
                 if (more < oneSetp / 2) {
-                    scrollBy(-more, 0);
+                    mAjustScroll.startScroll(getScrollX(),getScrollY(),-more,0);
+                    //scrollBy(-more, 0);
                 } else {
-                    scrollBy(oneSetp - more, 0);
+                   // scrollBy(oneSetp - more, 0);
+                    mAjustScroll.startScroll(getScrollX(),getScrollY(),oneSetp - more,0);
                 }
+                invalidate();
                 Log.i(TAG, "run: 滚动结束" + more);
             } else {
                 startScroll();
