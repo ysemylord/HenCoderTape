@@ -87,14 +87,20 @@ public class HorizontalScrollFling extends FrameLayout {
                 }
                 float x = event.getX(pointIndex);
                 float dx = x - mLastX;
-                int diffMin=getScrollX()-minScorll;
-                int diffMax=maxScroll-getScrollX();
-                if(dx>diffMin&&dx>0){
-                    dx=diffMin;
-                }else if(Math.abs(dx)>diffMax&&dx<0){
-                    dx=diffMax;
+
+                float scrollDx=-dx;
+                int curScrollX=getScrollX();
+                int leftDiffX=minScorll-curScrollX;
+                int righDiffX=maxScroll-curScrollX;
+                if(scrollDx<leftDiffX){//向右滑动
+                    scrollDx=leftDiffX;
+                }else if(scrollDx>righDiffX){//向左滑动
+                    scrollDx=righDiffX;
                 }
-                scrollBy((int) -dx, 0);
+
+                scrollBy((int)scrollDx, 0);
+
+
 
                 mLastX = x;
 
