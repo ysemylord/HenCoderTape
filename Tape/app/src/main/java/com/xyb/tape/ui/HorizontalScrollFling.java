@@ -24,6 +24,9 @@ public class HorizontalScrollFling extends FrameLayout {
     private Scroller mFlingScroller;
     private VelocityTracker mVelocityTracker;
 
+    private int leftMaxScroll =-1000;
+    private int rightMaxScroll =1000;
+
 
     public HorizontalScrollFling(Context context) {
         this(context, null);
@@ -78,8 +81,18 @@ public class HorizontalScrollFling extends FrameLayout {
                 }
                 float x = event.getX(pointIndex);
                 float dx = x - mLastX;
+                float scrollDx=-dx;
 
-                scrollBy((int) -dx, 0);
+                int curScrollX=getScrollX();
+                int leftDiffX=leftMaxScroll-curScrollX;
+                int righDiffX=rightMaxScroll-curScrollX;
+                if(scrollDx<leftDiffX){//向右滑动
+                   scrollDx=leftDiffX;
+                }else if(scrollDx>righDiffX){//向左滑动
+                   scrollDx=righDiffX;
+                }
+
+                scrollBy((int)scrollDx, 0);
 
                 mLastX = x;
 
@@ -94,7 +107,7 @@ public class HorizontalScrollFling extends FrameLayout {
                     mFlingScroller.fling(
                             getScrollX(), getScrollY(),
                             -(int) xvel, 0,//数据设为计算出的速度的相反值
-                            Integer.MIN_VALUE, Integer.MAX_VALUE,
+                            leftMaxScroll, rightMaxScroll,
                             0, 0);
                 }
                 mPointActivtyId = -1;
