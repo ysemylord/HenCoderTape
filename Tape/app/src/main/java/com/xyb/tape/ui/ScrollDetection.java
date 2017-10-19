@@ -52,7 +52,7 @@ public class ScrollDetection extends HorizontalScrollFling {
 
 
         for (int i = -5000; i < 5000; i++) {
-            if(i%20==0) {
+            if(i%100==0) {
                 lineList.add(i);
             }
         }

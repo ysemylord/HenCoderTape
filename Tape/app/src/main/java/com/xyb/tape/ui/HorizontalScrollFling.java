@@ -24,9 +24,11 @@ public class HorizontalScrollFling extends FrameLayout {
     private Scroller mFlingScroller;
     private VelocityTracker mVelocityTracker;
 
-    private int leftMaxScroll =-1000;
-    private int rightMaxScroll =1000;
+    private int leftMaxScroll =-1000;//内容左部的最大偏移
+    private int rightMaxScroll =1000;//内容右部的最大偏移
 
+    private int oneStep=100;//每次的偏移量必须是oneStep的整数倍
+    private int currentScrollX;
 
     public HorizontalScrollFling(Context context) {
         this(context, null);
@@ -103,16 +105,17 @@ public class HorizontalScrollFling extends FrameLayout {
                         mPointActivtyId);
                 Log.i(TAG, "onTouchEvent: " + xvel);
 
-                if(Math.abs(xvel)>ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity()) {
+           /*     if(Math.abs(xvel)>ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity()) {
                     mFlingScroller.fling(
                             getScrollX(), getScrollY(),
                             -(int) xvel, 0,//数据设为计算出的速度的相反值
                             leftMaxScroll, rightMaxScroll,
                             0, 0);
-                }
+                }*/
                 mPointActivtyId = -1;
                 mLastX = -1;
 
+                sartAjust();
 
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -141,6 +144,31 @@ public class HorizontalScrollFling extends FrameLayout {
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
+    }
+
+    private long CHECKTIME=300;
+    Runnable adjustRunnable=new Runnable() {
+        @Override
+        public void run() {
+            int scrollX=getScrollX();
+            if(currentScrollX==scrollX) {//滑动结束
+                int remain = scrollX % oneStep;
+                if (Math.abs(remain) < oneStep / 2) {
+                    scrollBy(-remain,0);//
+                    Log.i(TAG, "run: scroll dx"+remain);
+                } else {
+                   int  calucleOneStep=oneStep*(scrollX/Math.abs(scrollX));
+                   scrollBy(calucleOneStep-remain,0);
+                }
+            }else{//继续检测
+                sartAjust();
+            }
+        }
+    };
+
+    private  void sartAjust(){
+        currentScrollX=getScrollX();
+        postDelayed(adjustRunnable,CHECKTIME);
     }
 
 }
