@@ -24,7 +24,7 @@ public class HorizontalScrollFling extends FrameLayout {
     private Scroller mFlingScroller;
     private VelocityTracker mVelocityTracker;
 
-    protected int minScorll, maxScroll;
+    protected int maxLeftScorll, maxRightScroll;
     protected int oneSetp;//滑动的最小步长
     private int currentScroll;
     private Scroller mAjustScroll;
@@ -56,9 +56,7 @@ public class HorizontalScrollFling extends FrameLayout {
         }
 
 
-        if (mFlingScroller == null) {
-            mFlingScroller = new Scroller(getContext());
-        }
+
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -87,8 +85,8 @@ public class HorizontalScrollFling extends FrameLayout {
                 }
                 float x = event.getX(pointIndex);
                 float dx = x - mLastX;
-                int diffMin=getScrollX()-minScorll;
-                int diffMax=maxScroll-getScrollX();
+                int diffMin=getScrollX()- maxLeftScorll;
+                int diffMax= maxRightScroll -getScrollX();
                 if(dx>diffMin&&dx>0){
                     dx=diffMin;
                 }else if(Math.abs(dx)>diffMax&&dx<0){
@@ -109,7 +107,7 @@ public class HorizontalScrollFling extends FrameLayout {
                     mFlingScroller.fling(
                             getScrollX(), getScrollY(),
                             -(int) xvel, 0,//数据设为计算出的速度的相反值
-                            minScorll, maxScroll,
+                            maxLeftScorll, maxRightScroll,
                             0, 0);
                 }
                 startScroll();
@@ -158,19 +156,19 @@ public class HorizontalScrollFling extends FrameLayout {
     /**
      * 设置最小的偏移量
      *
-     * @param minScorll
+     * @param maxLeftScorll
      */
-    public void setMinScorll(int minScorll) {
-        this.minScorll = minScorll;
+    public void setMaxLeftScorll(int maxLeftScorll) {
+        this.maxLeftScorll = maxLeftScorll;
     }
 
     /**
      * 设置最大的偏移量
      *
-     * @param maxScroll
+     * @param maxRightScroll
      */
-    public void setMaxScroll(int maxScroll) {
-        this.maxScroll = maxScroll;
+    public void setMaxRightScroll(int maxRightScroll) {
+        this.maxRightScroll = maxRightScroll;
     }
 
     /**
@@ -204,7 +202,7 @@ public class HorizontalScrollFling extends FrameLayout {
                     //scrollBy(-more, 0);
                 } else {
                    // scrollBy(oneSetp - more, 0);
-                    mAjustScroll.startScroll(getScrollX(),getScrollY(),oneSetp - more,0);
+                    mAjustScroll.startScroll(getScrollX(),getScrollY(), oneSetp*(Math.abs(getScrollX())/getScrollX()) - more,0);
                 }
                 invalidate();
                 Log.i(TAG, "run: 滚动结束" + more);

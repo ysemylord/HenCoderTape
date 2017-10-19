@@ -104,8 +104,8 @@ public class MyTap extends HorizontalScrollFling {
 
         }
 
-        setMinScorll(0);
-        setMaxScroll(startX - getWidth() / 2 - lineGap);
+        setMaxLeftScorll(0);
+        setMaxRightScroll(startX - getWidth() / 2 - lineGap);
     }
 
     private boolean isLongLine(float value) {
