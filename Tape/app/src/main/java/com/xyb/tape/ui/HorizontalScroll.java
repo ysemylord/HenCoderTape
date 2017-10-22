@@ -92,6 +92,7 @@ public class HorizontalScroll extends FrameLayout {
                             -(int) xvel, 0,//数据设为计算出的速度的相反值
                             Integer.MIN_VALUE, Integer.MAX_VALUE,
                             0, 0);
+                    invalidate();
                 }
                 mPointActivtyId = -1;
                 mLastX = -1;
