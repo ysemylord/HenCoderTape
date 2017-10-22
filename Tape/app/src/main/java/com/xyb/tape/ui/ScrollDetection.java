@@ -17,7 +17,7 @@ import java.util.List;
  * @author xyb
  */
 
-public class ScrollDetection extends HorizontalScrollFling {
+public class ScrollDetection extends HorizontalScroll {
     private static final String TAG = "MyTap";
 
     private int indicatorWidth = 10;

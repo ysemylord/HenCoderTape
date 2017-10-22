@@ -2,7 +2,6 @@ package com.xyb.tape.ui;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v4.view.VelocityTrackerCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -16,7 +15,7 @@ import android.widget.Scroller;
  *
  */
 
-public class HorizontalScrollFling extends FrameLayout {
+public class HorizontalScroll extends FrameLayout {
     private static final String TAG = "MyScrollView";
     private int mPointActivtyId = -1;
     private int mTouchSlop = -1;//用来判断手势移动的距离是否达到滑动的标准
@@ -25,11 +24,11 @@ public class HorizontalScrollFling extends FrameLayout {
     private VelocityTracker mVelocityTracker;
 
 
-    public HorizontalScrollFling(Context context) {
+    public HorizontalScroll(Context context) {
         this(context, null);
     }
 
-    public HorizontalScrollFling(Context context, @Nullable AttributeSet attrs) {
+    public HorizontalScroll(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
         init();
     }
@@ -40,7 +39,7 @@ public class HorizontalScrollFling extends FrameLayout {
         }
     }
 
-    public HorizontalScrollFling(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public HorizontalScroll(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -78,18 +77,15 @@ public class HorizontalScrollFling extends FrameLayout {
                 }
                 float x = event.getX(pointIndex);
                 float dx = x - mLastX;
-
-                scrollBy((int) -dx, 0);
+                int scrollDx= (int) -dx;
+                scrollBy(scrollDx, 0);
 
                 mLastX = x;
 
                 break;
             case MotionEvent.ACTION_UP:
                 mVelocityTracker.computeCurrentVelocity(1000);
-                float xvel = VelocityTrackerCompat.getXVelocity(mVelocityTracker,
-                        mPointActivtyId);
-                Log.i(TAG, "onTouchEvent: " + xvel);
-
+                float xvel=mVelocityTracker.getXVelocity(mPointActivtyId);
                 if(Math.abs(xvel)>ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity()) {
                     mFlingScroller.fling(
                             getScrollX(), getScrollY(),
