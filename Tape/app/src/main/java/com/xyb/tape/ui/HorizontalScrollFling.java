@@ -13,7 +13,6 @@ import android.widget.Scroller;
 
 /**
  * Created by xuyabo on 2017/9/10.
- *
  */
 
 public class HorizontalScrollFling extends FrameLayout {
@@ -24,8 +23,8 @@ public class HorizontalScrollFling extends FrameLayout {
     private Scroller mFlingScroller;
     private VelocityTracker mVelocityTracker;
 
-    private int leftMaxScroll =-1000;
-    private int rightMaxScroll =1000;
+    private int leftMaxShow = -1000;
+    private int rightMaxShow = 1000;
 
 
     public HorizontalScrollFling(Context context) {
@@ -54,12 +53,11 @@ public class HorizontalScrollFling extends FrameLayout {
         }
 
 
-
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
 
-                if(!mFlingScroller.isFinished()){
+                if (!mFlingScroller.isFinished()) {
                     mFlingScroller.abortAnimation();
                 }
                 int index = event.getActionIndex();
@@ -81,18 +79,18 @@ public class HorizontalScrollFling extends FrameLayout {
                 }
                 float x = event.getX(pointIndex);
                 float dx = x - mLastX;
-                float scrollDx=-dx;
+                float scrollDx = -dx;
 
-                int curScrollX=getScrollX();
-                int leftDiffX=leftMaxScroll-curScrollX;
-                int righDiffX=rightMaxScroll-curScrollX;
-                if(scrollDx<leftDiffX){//向右滑动
-                   scrollDx=leftDiffX;
-                }else if(scrollDx>righDiffX){//向左滑动
-                   scrollDx=righDiffX;
+                int curScrollX = getScrollX();
+                int leftRemain = leftMaxShow - curScrollX;
+                int righRemain = rightMaxShow - curScrollX;
+                if (scrollDx < leftRemain) {//向右滑动
+                    scrollDx = leftRemain;
+                } else if (scrollDx > righRemain) {//向左滑动
+                    scrollDx = righRemain;
                 }
 
-                scrollBy((int)scrollDx, 0);
+                scrollBy((int) scrollDx, 0);
 
                 mLastX = x;
 
@@ -103,11 +101,11 @@ public class HorizontalScrollFling extends FrameLayout {
                         mPointActivtyId);
                 Log.i(TAG, "onTouchEvent: " + xvel);
 
-                if(Math.abs(xvel)>ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity()) {
+                if (Math.abs(xvel) > ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity()) {
                     mFlingScroller.fling(
                             getScrollX(), getScrollY(),
                             -(int) xvel, 0,//数据设为计算出的速度的相反值
-                            leftMaxScroll, rightMaxScroll,
+                            leftMaxShow, rightMaxShow,
                             0, 0);
                 }
                 mPointActivtyId = -1;
@@ -143,4 +141,19 @@ public class HorizontalScrollFling extends FrameLayout {
         super.onScrollChanged(l, t, oldl, oldt);
     }
 
+    public int getLeftMaxShow() {
+        return leftMaxShow;
+    }
+
+    public void setLeftMaxShow(int leftMaxShow) {
+        this.leftMaxShow = leftMaxShow;
+    }
+
+    public int getRightMaxShow() {
+        return rightMaxShow;
+    }
+
+    public void setRightMaxShow(int rightMaxShow) {
+        this.rightMaxShow = rightMaxShow;
+    }
 }
