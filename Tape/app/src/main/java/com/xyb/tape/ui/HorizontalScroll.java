@@ -13,10 +13,14 @@ import android.widget.Scroller;
 
 /**
  * Created by xuyabo on 2017/9/10.
- * Scroller.fling  实现惯性滑动
+ * 该控件类似一个水平滑动的ScrollView
+ * 但是具有以下两个扩展功能
+ * leftMaxScorll，rightMaxScroll指定内容左右最大的偏移量。
+ * oneStep 每次内容滑动完成后，自动偏移到oneSetp的整数倍。
+ *
  */
 
-public class HorizontalScrollFling extends FrameLayout {
+public class HorizontalScroll extends FrameLayout {
     private static final String TAG = "MyScrollView";
     private int mPointActivtyId = -1;
     private int mTouchSlop = -1;//用来判断手势移动的距离是否达到滑动的标准
@@ -24,21 +28,21 @@ public class HorizontalScrollFling extends FrameLayout {
     private Scroller mFlingScroller;
     private VelocityTracker mVelocityTracker;
 
-    protected int maxLeftScorll, maxRightScroll;
-    protected int oneSetp;//滑动的最小步长
+    protected int leftMaxScorll, rightMaxScroll;
+    protected int oneStep;//滑动的最小步长
     private int currentScroll;
     private Scroller mAjustScroll;
 
 
-    public HorizontalScrollFling(Context context) {
+    public HorizontalScroll(Context context) {
         this(context, null);
     }
 
-    public HorizontalScrollFling(Context context, @Nullable AttributeSet attrs) {
+    public HorizontalScroll(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public HorizontalScrollFling(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public HorizontalScroll(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -83,16 +87,21 @@ public class HorizontalScrollFling extends FrameLayout {
                     Log.i(TAG, "onTouchEvent: error index");
                     break;
                 }
+
                 float x = event.getX(pointIndex);
                 float dx = x - mLastX;
-                int diffMin=getScrollX()- maxLeftScorll;
-                int diffMax= maxRightScroll -getScrollX();
-                if(dx>diffMin&&dx>0){
-                    dx=diffMin;
-                }else if(Math.abs(dx)>diffMax&&dx<0){
-                    dx=diffMax;
+                float scrollDx = -dx;
+
+                int curScrollX = getScrollX();
+                int leftDiffX = leftMaxScorll - curScrollX;
+                int righDiffX = rightMaxScroll - curScrollX;
+                if (scrollDx < leftDiffX) {//向右滑动
+                    scrollDx = leftDiffX;
+                } else if (scrollDx > righDiffX) {//向左滑动
+                    scrollDx = righDiffX;
                 }
-                scrollBy((int) -dx, 0);
+
+                scrollBy((int) scrollDx, 0);
 
                 mLastX = x;
 
@@ -107,10 +116,10 @@ public class HorizontalScrollFling extends FrameLayout {
                     mFlingScroller.fling(
                             getScrollX(), getScrollY(),
                             -(int) xvel, 0,//数据设为计算出的速度的相反值
-                            maxLeftScorll, maxRightScroll,
+                            leftMaxScorll, rightMaxScroll,
                             0, 0);
                 }
-                startScroll();
+                startCheckScroll();
                 mPointActivtyId = -1;
                 mLastX = -1;
 
@@ -125,9 +134,12 @@ public class HorizontalScrollFling extends FrameLayout {
         return true;
     }
 
-    private void startScroll() {
+    /**
+     * 检察Scroll是否停止
+     */
+    private void startCheckScroll() {
         currentScroll = getScrollX();
-        Log.i(TAG, "startScroll: currentScroll:" + currentScroll);
+        Log.i(TAG, "startCheckScroll: currentScroll:" + currentScroll);
         postDelayed(scrollCheckTask, 30);
     }
 
@@ -156,28 +168,28 @@ public class HorizontalScrollFling extends FrameLayout {
     /**
      * 设置最小的偏移量
      *
-     * @param maxLeftScorll
+     * @param leftMaxScorll
      */
-    public void setMaxLeftScorll(int maxLeftScorll) {
-        this.maxLeftScorll = maxLeftScorll;
+    public void setLeftMaxScorll(int leftMaxScorll) {
+        this.leftMaxScorll = leftMaxScorll;
     }
 
     /**
      * 设置最大的偏移量
      *
-     * @param maxRightScroll
+     * @param rightMaxScroll
      */
-    public void setMaxRightScroll(int maxRightScroll) {
-        this.maxRightScroll = maxRightScroll;
+    public void setRightMaxScroll(int rightMaxScroll) {
+        this.rightMaxScroll = rightMaxScroll;
     }
 
     /**
      * 设置每次滑动必须为oneStep的整数倍
      *
-     * @param oneSetp
+     * @param oneStep
      */
-    public void setOneSetp(int oneSetp) {
-        this.oneSetp = oneSetp;
+    public void setOneStep(int oneStep) {
+        this.oneStep = oneStep;
     }
 
     @Override
@@ -194,24 +206,30 @@ public class HorizontalScrollFling extends FrameLayout {
         @Override
         public void run() {
             int newScroll = getScrollX();
-            Log.i(TAG, "startScroll: newScroll:" + newScroll);
+            Log.i(TAG, "startCheckScroll: newScroll:" + newScroll);
             if (currentScroll == newScroll) {
-                int more = getScrollX() % oneSetp;
-                if (more < oneSetp / 2) {
-                    mAjustScroll.startScroll(getScrollX(),getScrollY(),-more,0);
-                    //scrollBy(-more, 0);
+                int more = currentScroll % oneStep;
+                int remain= oneStep * (getNumberSign(currentScroll))-more;
+                if (Math.abs(more) > oneStep / 2) {
+                    scrollBy(remain, 0);//
+                    Log.i(TAG, "run: scroll 调整" + remain);
                 } else {
-                   // scrollBy(oneSetp - more, 0);
-                    mAjustScroll.startScroll(getScrollX(),getScrollY(), oneSetp*(Math.abs(getScrollX())/getScrollX()) - more,0);
+                    scrollBy(-more, 0);
+                    Log.i(TAG, "run: scroll 调整" + -more);
+
                 }
                 invalidate();
-                Log.i(TAG, "run: 滚动结束" + more);
             } else {
-                startScroll();
+                startCheckScroll();
                 Log.i(TAG, "run: 滚动未结束");
             }
         }
     };
 
+
+    private int getNumberSign(int number){
+           if(number==0){return  1;}
+        return number / Math.abs(number);
+    }
 
 }

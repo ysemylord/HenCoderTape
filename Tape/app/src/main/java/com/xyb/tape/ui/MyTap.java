@@ -19,7 +19,7 @@ import java.util.List;
  * @author xyb
  */
 
-public class MyTap extends HorizontalScrollFling {
+public class MyTap extends HorizontalScroll {
     private static final String TAG = "MyTap";
     private float startKg = 30f;//最小刻度数
     private float endKg = 35f;//最大刻度数
@@ -65,7 +65,7 @@ public class MyTap extends HorizontalScrollFling {
             needKg = needKg + 0.1f;
         }
 
-        setOneSetp(lineGap);
+        setOneStep(lineGap);
     }
 
     public MyTap(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -84,6 +84,7 @@ public class MyTap extends HorizontalScrollFling {
         int startY = 0;
         int endY = 0;
 
+        //绘制刻度
         for (int i = 0; i < kgs.size(); i++) {
             float nowKg = kgs.get(i);
             if (isLongLine(nowKg)) {
@@ -104,8 +105,8 @@ public class MyTap extends HorizontalScrollFling {
 
         }
 
-        setMaxLeftScorll(0);
-        setMaxRightScroll(startX - getWidth() / 2 - lineGap);
+        setLeftMaxScorll(0);
+        setRightMaxScroll(startX - getWidth() / 2 - lineGap);
     }
 
     private boolean isLongLine(float value) {
