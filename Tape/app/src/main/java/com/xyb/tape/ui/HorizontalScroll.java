@@ -2,6 +2,7 @@ package com.xyb.tape.ui;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.annotation.Px;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -92,15 +93,6 @@ public class HorizontalScroll extends FrameLayout {
                 float dx = x - mLastX;
                 float scrollDx = -dx;
 
-                int curScrollX = getScrollX();
-                int leftDiffX = leftMaxScorll - curScrollX;
-                int righDiffX = rightMaxScroll - curScrollX;
-                if (scrollDx < leftDiffX) {//向右滑动
-                    scrollDx = leftDiffX;
-                } else if (scrollDx > righDiffX) {//向左滑动
-                    scrollDx = righDiffX;
-                }
-
                 scrollBy((int) scrollDx, 0);
 
                 mLastX = x;
@@ -120,6 +112,7 @@ public class HorizontalScroll extends FrameLayout {
                             0, 0);
                 }
                 startCheckScroll();
+
                 mPointActivtyId = -1;
                 mLastX = -1;
 
@@ -132,6 +125,25 @@ public class HorizontalScroll extends FrameLayout {
                 break;
         }
         return true;
+    }
+
+
+    //重写滑动方法，设置到边界的时候不滑。
+    @Override
+    public void scrollTo(@Px int x, @Px int y) {
+        if (x < leftMaxScorll)
+        {
+            x = leftMaxScorll;
+        }
+        if (x > rightMaxScroll)
+        {
+            x = rightMaxScroll;
+        }
+        if (x != getScrollX())
+        {
+            super.scrollTo(x, y);
+        }
+
     }
 
     /**
