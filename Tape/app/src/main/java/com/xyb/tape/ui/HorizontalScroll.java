@@ -18,21 +18,21 @@ import android.widget.Scroller;
  * 但是具有以下两个扩展功能
  * leftMaxScorll，rightMaxScroll指定内容左右最大的偏移量。
  * oneStep 每次内容滑动完成后，自动偏移到oneSetp的整数倍。
- *
  */
 
 public class HorizontalScroll extends FrameLayout {
     private static final String TAG = "MyScrollView";
     private int mPointActivtyId = -1;
-    private int mTouchSlop = -1;//用来判断手势移动的距离是否达到滑动的标准
+    private int mTouchSlop = -1;//可判断手势为移动的距离的最小距离
+    private int mMinimumFling;//可判定为滑动的最小速度
+    private int mMaximumFling;//建议的最大的滑动速度
     private float mLastX = -1;
     private Scroller mFlingScroller;
-    private VelocityTracker mVelocityTracker;
 
+    private VelocityTracker mVelocityTracker;
     protected int leftMaxScorll, rightMaxScroll;
     protected int oneStep;//滑动的最小步长
     private int currentScroll;
-    private Scroller mAjustScroll;
 
 
     public HorizontalScroll(Context context) {
@@ -50,25 +50,22 @@ public class HorizontalScroll extends FrameLayout {
 
     private void init() {
         mFlingScroller = new Scroller(getContext());
-        mAjustScroll=new Scroller(getContext());
+
+        mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+        mMinimumFling = ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity();
+        mMaximumFling = ViewConfiguration.get(getContext()).getScaledMaximumFlingVelocity();
     }
 
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mTouchSlop < 0) {
-            mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
-        }
-
 
 
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                if(!mAjustScroll.isFinished()){
-                    mAjustScroll.abortAnimation();
-                }
-                if(!mFlingScroller.isFinished()){
+
+                if (!mFlingScroller.isFinished()) {
                     mFlingScroller.abortAnimation();
                 }
                 int index = event.getActionIndex();
@@ -99,19 +96,22 @@ public class HorizontalScroll extends FrameLayout {
 
                 break;
             case MotionEvent.ACTION_UP:
-                mVelocityTracker.computeCurrentVelocity(1000);
+                mVelocityTracker.computeCurrentVelocity(1000, mMaximumFling);
                 float xvel = VelocityTrackerCompat.getXVelocity(mVelocityTracker,
                         mPointActivtyId);
                 Log.i(TAG, "onTouchEvent: " + xvel);
 
-                if(Math.abs(xvel)>ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity()) {
+                if (Math.abs(xvel) > mMinimumFling) {
                     mFlingScroller.fling(
                             getScrollX(), getScrollY(),
                             -(int) xvel, 0,//数据设为计算出的速度的相反值
                             leftMaxScorll, rightMaxScroll,
                             0, 0);
+                    invalidate();
+                } else {
+                    ajustScrollX();
                 }
-                startCheckScroll();
+
 
                 mPointActivtyId = -1;
                 mLastX = -1;
@@ -163,18 +163,32 @@ public class HorizontalScroll extends FrameLayout {
             Log.i(TAG, "computeScroll: " + currX);
             scrollTo(currX, mFlingScroller.getCurrY());
 
+            if (!mFlingScroller.computeScrollOffset()) {
+                ajustScrollX();
+            }
             invalidate();
             Log.i(TAG, "computeScroll: 重绘");
         }
 
-        if(mAjustScroll.computeScrollOffset()){
-            mFlingScroller.abortAnimation();
-            int currX = mAjustScroll.getCurrX();
-            int currY = mAjustScroll.getCurrY();
-            scrollTo(currX, currY);
-            invalidate();
-            Log.i(TAG, "mAjustScroll computeScroll currX :"+currX);
+
+    }
+
+    /**
+     * 调整偏移量，是scrollx为oneStep的整数倍。
+     * 供滑动完成后调用
+     */
+    private void ajustScrollX() {
+        int more = getScrollX() % oneStep;
+        int remain = oneStep * (getNumberSign(currentScroll)) - more;
+        if (Math.abs(more) > oneStep / 2) {
+            mFlingScroller.startScroll(getScrollX(), getScrollY(), remain, getScrollY());
+            Log.i(TAG, "run: scroll 调整" + remain);
+        } else {
+            mFlingScroller.startScroll(getScrollX(), getScrollY(), -more, getScrollY());
+            Log.i(TAG, "run: scroll 调整" + -more);
+
         }
+        invalidate();
     }
 
     /**
@@ -240,7 +254,7 @@ public class HorizontalScroll extends FrameLayout {
 
 
     private int getNumberSign(int number){
-           if(number==0){return  1;}
+        if(number==0){return  1;}
         return number / Math.abs(number);
     }
 
