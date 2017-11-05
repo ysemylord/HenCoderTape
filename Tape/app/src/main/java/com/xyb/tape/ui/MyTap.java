@@ -2,12 +2,13 @@ package com.xyb.tape.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
+
+import com.xyb.tape.R;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,8 +32,9 @@ public class MyTap extends HorizontalScroll {
     private int indicatorWidth = 10;
     int sortLineHeight = 50;//短刻度高度
     int longLineHeight = 100;//长刻度高度
-    int scalesColor = Color.GRAY;//刻度颜色
-    int indicatorColor = Color.GREEN;//知识器颜色
+    int scalesColor =getResources().getColor(R.color.colorGray);//刻度颜色
+    int indicatorColor =getResources().getColor(R.color.colorGreen);//知识器颜色
+    int textColor=getResources().getColor(R.color.colorBlack);
     List<Float> kgs = new ArrayList<>();
     private Paint kgPaint;//文字画笔
     private Paint bigScalesPaint;//刻度画笔
@@ -62,6 +64,7 @@ public class MyTap extends HorizontalScroll {
         indicatorPaint.setStrokeCap(Paint.Cap.ROUND);
 
         kgPaint.setTextSize(48);
+        kgPaint.setColor(textColor);
 
         bigScalesPaint.setStrokeCap(Paint.Cap.ROUND);
         bigScalesPaint.setColor(scalesColor);
@@ -89,8 +92,7 @@ public class MyTap extends HorizontalScroll {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        //绘制中间的指示器
-        canvas.drawLine(getScrollX() + getWidth() / 2, 0, getScrollX() + getWidth() / 2, indicatorHeight, indicatorPaint);
+
 
 
         int startX = getWidth() / 2;//从屏幕中间开始绘制刻度
@@ -122,6 +124,9 @@ public class MyTap extends HorizontalScroll {
 
         setLeftMaxScorll(0);
         setRightMaxScroll(startX - getWidth() / 2 - lineGap);
+
+        //绘制中间的指示器
+        canvas.drawLine(getScrollX() + getWidth() / 2, 0, getScrollX() + getWidth() / 2, indicatorHeight, indicatorPaint);
     }
 
     /**
