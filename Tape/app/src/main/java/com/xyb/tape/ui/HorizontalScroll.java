@@ -146,14 +146,6 @@ public class HorizontalScroll extends FrameLayout {
 
     }
 
-    /**
-     * 检察Scroll是否停止
-     */
-    private void startCheckScroll() {
-        currentScroll = getScrollX();
-        Log.i(TAG, "startCheckScroll: currentScroll:" + currentScroll);
-        postDelayed(scrollCheckTask, 30);
-    }
 
     @Override
     public void computeScroll() {
@@ -225,32 +217,7 @@ public class HorizontalScroll extends FrameLayout {
 
     }
 
-    /**
-     * 停止滑动后对偏移量进行调整，使偏移量为oneStep的整数倍
-     */
-    Runnable scrollCheckTask = new Runnable() {
-        @Override
-        public void run() {
-            int newScroll = getScrollX();
-            Log.i(TAG, "startCheckScroll: newScroll:" + newScroll);
-            if (currentScroll == newScroll) {
-                int more = currentScroll % oneStep;
-                int remain= oneStep * (getNumberSign(currentScroll))-more;
-                if (Math.abs(more) > oneStep / 2) {
-                    scrollBy(remain, 0);//
-                    Log.i(TAG, "run: scroll 调整" + remain);
-                } else {
-                    scrollBy(-more, 0);
-                    Log.i(TAG, "run: scroll 调整" + -more);
 
-                }
-                invalidate();
-            } else {
-                startCheckScroll();
-                Log.i(TAG, "run: 滚动未结束");
-            }
-        }
-    };
 
 
     private int getNumberSign(int number){
