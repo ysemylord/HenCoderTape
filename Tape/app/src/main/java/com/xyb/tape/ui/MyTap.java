@@ -23,6 +23,7 @@ public class MyTap extends HorizontalScroll {
     private static final String TAG = "MyTap";
     private float startKg = 30f;//最小刻度数
     private float endKg = 35f;//最大刻度数
+    private float minKg = 0.2f;//每一小格的刻度
     int lineGap = 40;//每个刻度间的间距
     int indicatorHeight = 150;//指示器高度
     int smallLineWidth = 5;//端刻度宽度
@@ -34,8 +35,9 @@ public class MyTap extends HorizontalScroll {
     int indicatorColor = Color.GREEN;//知识器颜色
     List<Float> kgs = new ArrayList<>();
     private Paint kgPaint;//文字画笔
-    private Paint scalesPaint;//刻度画笔
-    private Paint indicatorPaint;//姿势器画笔
+    private Paint bigScalesPaint;//刻度画笔
+    private Paint smallScalesPaint;//刻度画笔
+    private Paint indicatorPaint;//指示器画笔
 
     private OuterInterface mOuterInterface;
 
@@ -46,23 +48,34 @@ public class MyTap extends HorizontalScroll {
     public MyTap(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
+        init();
+    }
+
+    private void init() {
         indicatorPaint = new Paint();
+        kgPaint = new Paint();
+        bigScalesPaint = new Paint();
+        smallScalesPaint = new Paint();
+
         indicatorPaint.setColor(indicatorColor);
         indicatorPaint.setStrokeWidth(indicatorWidth);
         indicatorPaint.setStrokeCap(Paint.Cap.ROUND);
 
-        kgPaint = new Paint();
-
-        scalesPaint = new Paint();
-        scalesPaint.setStrokeCap(Paint.Cap.ROUND);
-        scalesPaint.setColor(scalesColor);
         kgPaint.setTextSize(48);
+
+        bigScalesPaint.setStrokeCap(Paint.Cap.ROUND);
+        bigScalesPaint.setColor(scalesColor);
+        bigScalesPaint.setStrokeWidth(bigLineWidth);
+
+        smallScalesPaint.setStrokeCap(Paint.Cap.ROUND);
+        smallScalesPaint.setColor(scalesColor);
+        smallScalesPaint.setStrokeWidth(smallLineWidth);
 
 
         float needKg = startKg;
-        while (needKg <= endKg) {
+        while (compareTwoNum(needKg,endKg)<=0) {
             kgs.add(needKg);
-            needKg = needKg + 0.1f;
+            needKg = needKg + minKg;
         }
 
         setOneStep(lineGap);
@@ -87,19 +100,21 @@ public class MyTap extends HorizontalScroll {
         //绘制刻度
         for (int i = 0; i < kgs.size(); i++) {
             float nowKg = kgs.get(i);
+            Paint linePaint;
             if (isLongLine(nowKg)) {
-                endY = startY + longLineHeight;
-                scalesPaint.setStrokeWidth(bigLineWidth);
-                String showKg = twoDecimal(nowKg);
 
+                linePaint = bigScalesPaint;
+                endY = startY + longLineHeight;
+
+                String showKg = zeroDecimal(nowKg);
                 Rect rect = new Rect();
                 kgPaint.getTextBounds(showKg, 0, showKg.length(), rect);
                 canvas.drawText(showKg, startX - rect.width() / 2, endY + rect.height() + 20, kgPaint);
             } else {
+                linePaint = smallScalesPaint;
                 endY = startY + sortLineHeight;
-                scalesPaint.setStrokeWidth(smallLineWidth);
             }
-            canvas.drawLine(startX, 0, startX, endY, scalesPaint);
+            canvas.drawLine(startX, 0, startX, endY, linePaint);
             startX += lineGap;
 
 
@@ -109,13 +124,24 @@ public class MyTap extends HorizontalScroll {
         setRightMaxScroll(startX - getWidth() / 2 - lineGap);
     }
 
-    private boolean isLongLine(float value) {
+    /**
+     * 决定是否是长线
+     * 可以覆盖此方法，决定value为几时，为长线
+     * @param value
+     * @return
+     */
+    public boolean isLongLine(float value) {
         String resS = oneDecimal(value);
         String[] splits = resS.split("\\.");
         if (splits[1].equals("0")) {
             return true;
         }
         return false;
+    }
+
+    private String towDecimal(float value) {
+        BigDecimal bigDecimal = new BigDecimal(value);
+        return bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     }
 
     /**
@@ -129,10 +155,17 @@ public class MyTap extends HorizontalScroll {
         return bigDecimal.setScale(1, BigDecimal.ROUND_HALF_UP).toString();
     }
 
-    private String twoDecimal(float value) {
+    private String zeroDecimal(float value) {
         BigDecimal bigDecimal = new BigDecimal(value);
         return bigDecimal.setScale(0, BigDecimal.ROUND_HALF_UP).toString();
     }
+
+    private int compareTwoNum(float num1,float num2){
+        String num1Str= towDecimal(num1);
+        String num2Str= towDecimal(num2);
+        return num1Str.compareTo(num2Str);
+    }
+
 
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
