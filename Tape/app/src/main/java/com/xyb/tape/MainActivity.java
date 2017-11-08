@@ -17,8 +17,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         kgTV = (TextView) findViewById(R.id.kg_textview);
         myTap = (MyTap) findViewById(R.id.my_tap);
-        myTap.setStartKg(30f);
-        myTap.setEndKg(40f);
+        myTap.setStartNum(30f);
+        myTap.setEndNum(40f);
         myTap.setmOuterInterface(new MyTap.OuterInterface() {
             @Override
             public void nowKg(String nowKG) {

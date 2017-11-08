@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+      <declare-styleable name="MyTap">
+          <attr name="startNum" format="string"/>
+          <attr name="endNum" format="string"/>
+          <attr name="internalNum" format="string"/>
+          <attr name="scaleGap" format="integer"/>
+      </declare-styleable>
+</resources>

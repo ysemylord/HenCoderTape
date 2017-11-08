@@ -16,6 +16,9 @@
         android:layout_height="wrap_content" />
 
     <com.xyb.tape.ui.MyTap
+        app:startNum="30f"
+        app:endNum="40f"
+        app:internalNum="0.2f"
         android:background="@android:color/white"
         android:id="@+id/my_tap"
         android:layout_width="match_parent"
