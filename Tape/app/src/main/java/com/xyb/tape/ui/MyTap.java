@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 
@@ -24,9 +23,9 @@ import java.util.List;
 
 public class MyTap extends HorizontalScroll {
     private static final String TAG = "MyTap";
-    private float startNum ;//最小刻度数
-    private float endNum ;//最大刻度数
-    private float internalNum ;//每一小格代表的刻度
+    private float startNum;//最小刻度数
+    private float endNum;//最大刻度数
+    private float internalNum;//每一小格代表的刻度
 
     int scaleGap = 40;//每个刻度间的间距
 
@@ -41,13 +40,22 @@ public class MyTap extends HorizontalScroll {
     int longScaleColor = Color.GRAY;//长 刻度颜色;
     Paint longScalePaint;//刻度画笔
 
-    int indicatorHeight = 150;//指示器高度
-    int indicatorWidth = 10;//指示器宽度
-    int indicatorColor = Color.GREEN;//知识器颜色
+    int indicatorLineHeight = 150;//指示器高度
+    int indicatorLineWidth = 10;//指示器宽度
+    int indicatorLineColor = Color.GREEN;//知识器颜色
     Paint indicatorPaint;//指示器画笔
+
+
+    int topHorizontalLineHeight;
+    int topHorizontalLineColor;
+    Paint topHorizontalLinePaint;
+
 
     List<Float> kgs = new ArrayList<>();
     private Paint kgPaint;//文字画笔
+    int textSize;
+    int textColor;
+    int textMarginTop;
 
 
     private OuterInterface mOuterInterface;
@@ -59,26 +67,49 @@ public class MyTap extends HorizontalScroll {
     public MyTap(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
-        init( context,  attrs);
+        init(context, attrs);
     }
 
     private void init(Context context, @Nullable AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MyTap, 0, 0);
-        startNum=getAttrStringToFlaot(typedArray,R.styleable.MyTap_startNum,20f);
-        endNum= getAttrStringToFlaot(typedArray,R.styleable.MyTap_endNum,30f);
-        internalNum= getAttrStringToFlaot(typedArray,R.styleable.MyTap_internalNum,0.2f);
+        startNum = typedArray.getFloat(R.styleable.MyTap_startNum, 20f);
+        endNum = typedArray.getFloat(R.styleable.MyTap_endNum, 30f);
+        internalNum = typedArray.getFloat(R.styleable.MyTap_internalNum, 0.2f);
+
+        scaleGap = typedArray.getInt(R.styleable.MyTap_scaleGap, 40);
+
+        sortLineWidth = typedArray.getDimensionPixelOffset(R.styleable.MyTap_sortLineWidth, 5);//短刻度宽度
+        sortLineHeight = typedArray.getDimensionPixelOffset(R.styleable.MyTap_sortLineHeight, 50);//短刻度高度
+        sortScaleColor = typedArray.getColor(R.styleable.MyTap_sortScaleColor, Color.GRAY);//短刻度颜色
+
+        longLineWidth = typedArray.getDimensionPixelOffset(R.styleable.MyTap_longLineWidth, 5);//短刻度宽度
+        longLineHeight = typedArray.getDimensionPixelOffset(R.styleable.MyTap_longLineHeight, 50);//短刻度高度
+        longScaleColor = typedArray.getColor(R.styleable.MyTap_longScaleColor, Color.GRAY);//短刻度颜色
+
+        indicatorLineWidth = typedArray.getDimensionPixelOffset(R.styleable.MyTap_indicatorLineWidth, 10);//短刻度宽度
+        indicatorLineHeight = typedArray.getDimensionPixelOffset(R.styleable.MyTap_indicatorLineHeight, 150);//短刻度高度
+        indicatorLineColor = typedArray.getColor(R.styleable.MyTap_indicatorScaleColor, Color.GREEN);//短刻度颜色
+
+        textSize = typedArray.getDimensionPixelSize(R.styleable.MyTap_textSize, 38);
+        textColor = typedArray.getColor(R.styleable.MyTap_textColor, Color.GRAY);
+        textMarginTop = typedArray.getDimensionPixelOffset(R.styleable.MyTap_textMarginTop, 20);
+
+        topHorizontalLineHeight = typedArray.getDimensionPixelOffset(R.styleable.MyTap_topHorizontalLineHeight, 2);
+        topHorizontalLineColor = typedArray.getColor(R.styleable.MyTap_topHorizontalLineColor, Color.GRAY);
 
         typedArray.recycle();
         indicatorPaint = new Paint();
         kgPaint = new Paint();
         sortScalePaint = new Paint();
         longScalePaint = new Paint();
+        topHorizontalLinePaint = new Paint();
 
-        indicatorPaint.setColor(indicatorColor);
-        indicatorPaint.setStrokeWidth(indicatorWidth);
+        indicatorPaint.setColor(indicatorLineColor);
+        indicatorPaint.setStrokeWidth(indicatorLineWidth);
         indicatorPaint.setStrokeCap(Paint.Cap.ROUND);
 
-        kgPaint.setTextSize(48);
+        topHorizontalLinePaint.setColor(topHorizontalLineColor);
+        topHorizontalLinePaint.setStrokeWidth(topHorizontalLineHeight);
 
         sortScalePaint.setStrokeCap(Paint.Cap.ROUND);
         sortScalePaint.setColor(longScaleColor);
@@ -88,6 +119,9 @@ public class MyTap extends HorizontalScroll {
         longScalePaint.setColor(sortScaleColor);
         longScalePaint.setStrokeWidth(sortLineWidth);
 
+        kgPaint.setAntiAlias(true);
+        kgPaint.setTextSize(textSize);
+        kgPaint.setColor(textColor);
 
         float needKg = startNum;
         while (MathUtil.compareTwoNum(needKg, endNum) <= 0) {
@@ -106,9 +140,6 @@ public class MyTap extends HorizontalScroll {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        //绘制中间的指示器
-        canvas.drawLine(getScrollX() + getWidth() / 2, 0, getScrollX() + getWidth() / 2, indicatorHeight, indicatorPaint);
-
 
         int startX = getWidth() / 2;//从屏幕中间开始绘制刻度
         int startY = 0;
@@ -126,7 +157,7 @@ public class MyTap extends HorizontalScroll {
                 String showKg = MathUtil.zeroDecimal(nowKg);
                 Rect rect = new Rect();
                 kgPaint.getTextBounds(showKg, 0, showKg.length(), rect);
-                canvas.drawText(showKg, startX - rect.width() / 2, endY + rect.height() + 20, kgPaint);
+                canvas.drawText(showKg, startX - rect.width() / 2, endY + rect.height() + textMarginTop, kgPaint);
             } else {
                 linePaint = longScalePaint;
                 endY = startY + sortLineHeight;
@@ -136,6 +167,11 @@ public class MyTap extends HorizontalScroll {
 
 
         }
+        //绘制中间的指示器
+        canvas.drawLine(getScrollX() + getWidth() / 2, 0, getScrollX() + getWidth() / 2, indicatorLineHeight, indicatorPaint);
+
+        //顶部横线
+        canvas.drawLine(0, 0, getWidth() + rightMaxScroll, 0, topHorizontalLinePaint);
 
         setLeftMaxScorll(0);
         setRightMaxScroll(startX - getWidth() / 2 - scaleGap);
@@ -192,11 +228,5 @@ public class MyTap extends HorizontalScroll {
         invalidate();
     }
 
-    public float getAttrStringToFlaot(TypedArray typedArray,int atrr,float defaultValue){
-       String value= typedArray.getString(atrr);
-       if(TextUtils.isEmpty(value)){
-           return  defaultValue;
-       }
-       return Float.parseFloat(value);
-    }
+
 }

@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
       <declare-styleable name="MyTap">
-          <attr name="startNum" format="string"/>
-          <attr name="endNum" format="string"/>
-          <attr name="internalNum" format="string"/>
+          <attr name="startNum" format="float"/>
+          <attr name="endNum" format="float"/>
+          <attr name="internalNum" format="float"/>
           <attr name="scaleGap" format="integer"/>
+          <attr name="sortLineWidth" format="dimension"/>
+          <attr name="sortLineHeight" format="dimension"/>
+          <attr name="sortScaleColor" format="color"/>
+
+          <attr name="longLineWidth" format="dimension"/>
+          <attr name="longLineHeight" format="dimension"/>
+          <attr name="longScaleColor" format="color"/>
+
+          <attr name="indicatorLineWidth" format="dimension"/>
+          <attr name="indicatorLineHeight" format="dimension"/>
+          <attr name="indicatorScaleColor" format="color"/>
+
+          <attr name="textSize" format="dimension"/>
+          <attr name="textColor" format="color"/>
+          <attr name="textMarginTop" format="dimension"/>
+
+          <attr name="topHorizontalLineHeight" format="dimension"/>
+          <attr name="topHorizontalLineColor" format="color"/>
+
+
+
       </declare-styleable>
 </resources>
