@@ -32,6 +32,7 @@
         app:textColor="#000000"
         app:textSize="18sp"
         app:textMarginTop="15dp"
+        app:currentNum="35"
         android:background="@android:color/white"
         android:id="@+id/my_tap"
         android:layout_width="match_parent"

@@ -26,6 +26,7 @@ public class MyTap extends HorizontalScroll {
     private float startNum;//最小刻度数
     private float endNum;//最大刻度数
     private float internalNum;//每一小格代表的刻度
+    private float currentNum;//设置当前的刻度
 
     int scaleGap = 40;//每个刻度间的间距
 
@@ -75,6 +76,7 @@ public class MyTap extends HorizontalScroll {
         startNum = typedArray.getFloat(R.styleable.MyTap_startNum, 20f);
         endNum = typedArray.getFloat(R.styleable.MyTap_endNum, 30f);
         internalNum = typedArray.getFloat(R.styleable.MyTap_internalNum, 0.2f);
+        currentNum=typedArray.getFloat(R.styleable.MyTap_currentNum,startNum);
 
         scaleGap = typedArray.getInt(R.styleable.MyTap_scaleGap, 40);
 
@@ -130,6 +132,13 @@ public class MyTap extends HorizontalScroll {
         }
 
         setOneStep(scaleGap);
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                scrollTo((int) (scaleGap*((currentNum-startNum)/internalNum)), getScrollY());
+            }
+        },200);
+
     }
 
     public MyTap(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -140,7 +149,7 @@ public class MyTap extends HorizontalScroll {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-
+        Log.i(TAG, "onDraw: start");
         int startX = getWidth() / 2;//从屏幕中间开始绘制刻度
         int startY = 0;
         int endY = 0;
@@ -175,6 +184,8 @@ public class MyTap extends HorizontalScroll {
 
         setLeftMaxScorll(0);
         setRightMaxScroll(startX - getWidth() / 2 - scaleGap);
+
+        Log.i(TAG, "onDraw: end");
     }
 
     /**
