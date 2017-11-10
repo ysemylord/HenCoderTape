@@ -155,7 +155,7 @@ public class HorizontalScroll extends FrameLayout {
             Log.i(TAG, "computeScroll: " + currX);
             scrollTo(currX, mFlingScroller.getCurrY());
 
-            if (!mFlingScroller.computeScrollOffset()) {
+            if (!mFlingScroller.computeScrollOffset()&&getScrollX()%oneStep!=0) {
                 ajustScrollX();
             }
             invalidate();
