@@ -132,6 +132,10 @@ public class MyTap extends HorizontalScroll {
         }
 
         setOneStep(scaleGap);
+
+        setLeftMaxScorll(0);
+        setRightMaxScroll((kgs.size()-1)*scaleGap);
+
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -176,16 +180,25 @@ public class MyTap extends HorizontalScroll {
             }
             startX += scaleGap;
         }
+
+
+        Log.i(TAG, "onDraw: end");
+    }
+
+    /**
+     * dispatchDraw是绘制子View的方法，onDraw之后调用，这里用来绘制刻度指示器和顶部横线
+     * @param canvas
+     */
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
         //绘制中间的指示器
         canvas.drawLine(getScrollX() + getWidth() / 2, 0, getScrollX() + getWidth() / 2, indicatorLineHeight, indicatorPaint);
 
         //顶部横线
-        canvas.drawLine(0, 0, getWidth() + rightMaxScroll, 0, topHorizontalLinePaint);
+        canvas.drawLine(0, 0, getScrollX()+getWidth(), 0, topHorizontalLinePaint);
 
-        setLeftMaxScorll(0);
-        setRightMaxScroll(startX - getWidth() / 2 - scaleGap);
 
-        Log.i(TAG, "onDraw: end");
     }
 
     /**
