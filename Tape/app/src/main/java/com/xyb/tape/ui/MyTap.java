@@ -156,25 +156,25 @@ public class MyTap extends HorizontalScroll {
 
         //绘制刻度
         for (int i = 0; i < kgs.size(); i++) {
-            float nowKg = kgs.get(i);
-            Paint linePaint;
-            if (isLongLine(nowKg)) {
+            if (startX>getScrollX()&&startX<getScrollX()+getWidth()) {
+                float nowKg = kgs.get(i);
+                Paint linePaint;
+                if (isLongLine(nowKg)) {
 
-                linePaint = sortScalePaint;
-                endY = startY + longLineHeight;
+                    linePaint = sortScalePaint;
+                    endY = startY + longLineHeight;
 
-                String showKg = MathUtil.zeroDecimal(nowKg);
-                Rect rect = new Rect();
-                kgPaint.getTextBounds(showKg, 0, showKg.length(), rect);
-                canvas.drawText(showKg, startX - rect.width() / 2, endY + rect.height() + textMarginTop, kgPaint);
-            } else {
-                linePaint = longScalePaint;
-                endY = startY + sortLineHeight;
+                    String showKg = MathUtil.zeroDecimal(nowKg);
+                    Rect rect = new Rect();
+                    kgPaint.getTextBounds(showKg, 0, showKg.length(), rect);
+                    canvas.drawText(showKg, startX - rect.width() / 2, endY + rect.height() + textMarginTop, kgPaint);
+                } else {
+                    linePaint = longScalePaint;
+                    endY = startY + sortLineHeight;
+                }
+                canvas.drawLine(startX, 0, startX, endY, linePaint);
             }
-            canvas.drawLine(startX, 0, startX, endY, linePaint);
             startX += scaleGap;
-
-
         }
         //绘制中间的指示器
         canvas.drawLine(getScrollX() + getWidth() / 2, 0, getScrollX() + getWidth() / 2, indicatorLineHeight, indicatorPaint);
