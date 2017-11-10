@@ -105,7 +105,7 @@ public class HorizontalScroll extends FrameLayout {
                     mFlingScroller.fling(
                             getScrollX(), getScrollY(),
                             -(int) xvel, 0,//数据设为计算出的速度的相反值
-                            leftMaxScorll-500, rightMaxScroll,
+                            leftMaxScorll-500, rightMaxScroll+500,
                             0, 0);
                     invalidate();
                 } else {
