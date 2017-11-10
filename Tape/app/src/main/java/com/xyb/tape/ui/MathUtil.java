@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  * @author xyb
  */
 
-class MathUtil {
+public class MathUtil {
     public static  String towDecimal(float value) {
         BigDecimal bigDecimal = new BigDecimal(value);
         return bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
@@ -17,7 +17,7 @@ class MathUtil {
     public static  int compareTwoNum(float num1,float num2){
         String num1Str= towDecimal(num1);
         String num2Str= towDecimal(num2);
-        return num1Str.compareTo(num2Str);
+        return new BigDecimal(num1Str).compareTo(new BigDecimal(num2Str));
     }
 
     public static  String zeroDecimal(float value) {
@@ -35,4 +35,5 @@ class MathUtil {
         BigDecimal bigDecimal = new BigDecimal(value);
         return bigDecimal.setScale(1, BigDecimal.ROUND_HALF_UP).toString();
     }
+
 }

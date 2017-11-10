@@ -17,7 +17,7 @@
 
     <com.xyb.tape.ui.MyTap
         app:startNum="30"
-        app:endNum="40"
+        app:endNum="140"
         app:internalNum="0.2"
         app:scaleGap="35"
         app:sortLineWidth="1dp"
