@@ -16,9 +16,9 @@
         android:layout_height="wrap_content" />
 
     <com.xyb.tape.ui.MyTap
-        app:startNum="30"
-        app:endNum="140"
-        app:internalNum="0.2"
+        app:startScale="30"
+        app:endScale="140"
+        app:internalScale="0.2"
         app:scaleGap="35"
         app:sortLineWidth="1dp"
         app:sortLineHeight="20dp"
@@ -31,8 +31,8 @@
         app:indicatorScaleColor="@android:color/holo_green_light"
         app:textColor="#000000"
         app:textSize="18sp"
-        app:textMarginTop="15dp"
-        app:currentNum="35"
+        app:textMarginTop="20dp"
+        app:currentScale="35"
         android:background="@android:color/white"
         android:id="@+id/my_tap"
         android:layout_width="match_parent"

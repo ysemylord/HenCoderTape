@@ -17,12 +17,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         kgTV = (TextView) findViewById(R.id.kg_textview);
         myTap = (MyTap) findViewById(R.id.my_tap);
-        myTap.setStartNum(30f);
-        myTap.setEndNum(40f);
-        myTap.setmOuterInterface(new MyTap.OuterInterface() {
+        myTap.setStartScale(30f);
+        myTap.setEndScale(40f);
+        myTap.setOuterInterface(new MyTap.OuterInterface() {
             @Override
-            public void nowKg(String nowKG) {
-                kgTV.setText(nowKG + "kg");
+            public void nowScale(String nowScale) {
+                kgTV.setText(nowScale + "kg");
             }
         });
 

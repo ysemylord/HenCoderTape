@@ -23,10 +23,10 @@ import java.util.List;
 
 public class MyTap extends HorizontalScroll {
     private static final String TAG = "MyTap";
-    private float startNum;//最小刻度数
-    private float endNum;//最大刻度数
-    private float internalNum;//每一小格代表的刻度
-    private float currentNum;//设置当前的刻度
+    private float startScale;//最小刻度数
+    private float endScale;//最大刻度数
+    private float internalScale;//每一小格代表的刻度
+    private float currentScale;//设置当前的刻度
 
     int scaleGap = 40;//每个刻度间的间距
 
@@ -52,7 +52,7 @@ public class MyTap extends HorizontalScroll {
     Paint topHorizontalLinePaint;
 
 
-    List<Float> kgs = new ArrayList<>();
+    List<Float> mScaleList = new ArrayList<>();
     private Paint kgPaint;//文字画笔
     int textSize;
     int textColor;
@@ -73,10 +73,10 @@ public class MyTap extends HorizontalScroll {
 
     private void init(Context context, @Nullable AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MyTap, 0, 0);
-        startNum = typedArray.getFloat(R.styleable.MyTap_startNum, 20f);
-        endNum = typedArray.getFloat(R.styleable.MyTap_endNum, 30f);
-        internalNum = typedArray.getFloat(R.styleable.MyTap_internalNum, 0.2f);
-        currentNum=typedArray.getFloat(R.styleable.MyTap_currentNum,startNum);
+        startScale = typedArray.getFloat(R.styleable.MyTap_startScale, 20f);
+        endScale = typedArray.getFloat(R.styleable.MyTap_endScale, 30f);
+        internalScale = typedArray.getFloat(R.styleable.MyTap_internalScale, 0.2f);
+        currentScale =typedArray.getFloat(R.styleable.MyTap_currentScale, startScale);
 
         scaleGap = typedArray.getInt(R.styleable.MyTap_scaleGap, 40);
 
@@ -125,21 +125,21 @@ public class MyTap extends HorizontalScroll {
         kgPaint.setTextSize(textSize);
         kgPaint.setColor(textColor);
 
-        float needKg = startNum;
-        while (MathUtil.compareTwoNum(needKg, endNum) <= 0) {
-            kgs.add(needKg);
-            needKg = needKg + internalNum;
+        float needKg = startScale;
+        while (MathUtil.compareTwoNum(needKg, endScale) <= 0) {
+            mScaleList.add(needKg);
+            needKg = needKg + internalScale;
         }
 
         setOneStep(scaleGap);
 
         setLeftMaxScorll(0);
-        setRightMaxScroll((kgs.size()-1)*scaleGap);
+        setRightMaxScroll((mScaleList.size()-1)*scaleGap);
 
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                scrollTo((int) (scaleGap*((currentNum-startNum)/internalNum)), getScrollY());
+                scrollTo((int) (scaleGap*((currentScale - startScale)/ internalScale)), getScrollY());
             }
         },200);
 
@@ -159,9 +159,9 @@ public class MyTap extends HorizontalScroll {
         int endY = 0;
 
         //绘制刻度
-        for (int i = 0; i < kgs.size(); i++) {
+        for (int i = 0; i < mScaleList.size(); i++) {
             if (startX>getScrollX()&&startX<getScrollX()+getWidth()) {
-                float nowKg = kgs.get(i);
+                float nowKg = mScaleList.get(i);
                 Paint linePaint;
                 if (isLongLine(nowKg)) {
 
@@ -223,32 +223,32 @@ public class MyTap extends HorizontalScroll {
         super.onScrollChanged(l, t, oldl, oldt);
         try {
 
-            int num = getScrollX() / scaleGap;
-            float kg = kgs.get(num);
+            int index = getScrollX() / scaleGap;
+            float nowScale = mScaleList.get(index);
             if (mOuterInterface != null) {
-                mOuterInterface.nowKg(MathUtil.oneDecimal(kg));
+                mOuterInterface.nowScale(MathUtil.oneDecimal(nowScale));
             }
-            Log.i(TAG, "now kg is " + kg);
+            Log.i(TAG, "now nowScale is " + nowScale);
         } catch (IndexOutOfBoundsException e) {
             Log.e(TAG, "超出数组长度");
         }
     }
 
     public interface OuterInterface {
-        void nowKg(String nowKG);
+        void nowScale(String nowScale);
     }
 
-    public void setmOuterInterface(OuterInterface mOuterInterface) {
+    public void setOuterInterface(OuterInterface mOuterInterface) {
         this.mOuterInterface = mOuterInterface;
     }
 
-    public void setStartNum(float startNum) {
-        this.startNum = startNum;
+    public void setStartScale(float startScale) {
+        this.startScale = startScale;
         invalidate();
     }
 
-    public void setEndNum(float endNum) {
-        this.endNum = endNum;
+    public void setEndScale(float endScale) {
+        this.endScale = endScale;
         invalidate();
     }
 
