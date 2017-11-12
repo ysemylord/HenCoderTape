@@ -19,7 +19,7 @@
         app:startScale="30"
         app:endScale="140"
         app:internalScale="0.2"
-        app:scaleGap="35"
+        app:scaleGap="20dp"
         app:sortLineWidth="1dp"
         app:sortLineHeight="20dp"
         app:sortScaleColor="@android:color/darker_gray"

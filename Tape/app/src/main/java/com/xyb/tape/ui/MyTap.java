@@ -28,35 +28,35 @@ public class MyTap extends HorizontalScroll {
     private float internalScale;//每一小格代表的刻度
     private float currentScale;//设置当前的刻度
 
-    int scaleGap = 40;//每个刻度间的间距
+    private int scaleGap = 40;//每个刻度间的间距
 
 
-    int sortLineWidth = 5;//短刻度宽度
-    int sortLineHeight = 50;//短刻度高度
-    int sortScaleColor = Color.GRAY;//短刻度颜色
-    Paint sortScalePaint;//短刻度画笔
+    private int sortLineWidth = 5;//短刻度宽度
+    private int sortLineHeight = 50;//短刻度高度
+    private int sortScaleColor = Color.GRAY;//短刻度颜色
+    private Paint sortScalePaint;//短刻度画笔
 
-    int longLineWidth = 8;//长刻度宽度
-    int longLineHeight = 100;//长刻度高度
-    int longScaleColor = Color.GRAY;//长 刻度颜色;
-    Paint longScalePaint;//刻度画笔
+    private int longLineWidth = 8;//长刻度宽度
+    private int longLineHeight = 100;//长刻度高度
+    private int longScaleColor = Color.GRAY;//长 刻度颜色;
+    private Paint longScalePaint;//刻度画笔
 
-    int indicatorLineHeight = 150;//指示器高度
-    int indicatorLineWidth = 10;//指示器宽度
-    int indicatorLineColor = Color.GREEN;//知识器颜色
-    Paint indicatorPaint;//指示器画笔
-
-
-    int topHorizontalLineHeight;
-    int topHorizontalLineColor;
-    Paint topHorizontalLinePaint;
+    private int indicatorLineHeight = 150;//指示器高度
+    private int indicatorLineWidth = 10;//指示器宽度
+    private int indicatorLineColor = Color.GREEN;//知识器颜色
+    private Paint indicatorPaint;//指示器画笔
 
 
-    List<Float> mScaleList = new ArrayList<>();
+    private int topHorizontalLineHeight;
+    private int topHorizontalLineColor;
+    private Paint topHorizontalLinePaint;
+
+
+    private List<Float> scaleList = new ArrayList<>();
     private Paint kgPaint;//文字画笔
-    int textSize;
-    int textColor;
-    int textMarginTop;
+    private int textSize;
+    private int textColor;
+    private int textMarginTop;
 
 
     private OuterInterface mOuterInterface;
@@ -75,10 +75,10 @@ public class MyTap extends HorizontalScroll {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MyTap, 0, 0);
         startScale = typedArray.getFloat(R.styleable.MyTap_startScale, 20f);
         endScale = typedArray.getFloat(R.styleable.MyTap_endScale, 30f);
-        internalScale = typedArray.getFloat(R.styleable.MyTap_internalScale, 0.2f);
-        currentScale =typedArray.getFloat(R.styleable.MyTap_currentScale, startScale);
+        internalScale = typedArray.getFloat(R.styleable.MyTap_internalScale, 0.1f);
+        currentScale = typedArray.getFloat(R.styleable.MyTap_currentScale, startScale);
 
-        scaleGap = typedArray.getInt(R.styleable.MyTap_scaleGap, 40);
+        scaleGap = typedArray.getDimensionPixelOffset(R.styleable.MyTap_scaleGap, 20);
 
         sortLineWidth = typedArray.getDimensionPixelOffset(R.styleable.MyTap_sortLineWidth, 5);//短刻度宽度
         sortLineHeight = typedArray.getDimensionPixelOffset(R.styleable.MyTap_sortLineHeight, 50);//短刻度高度
@@ -127,21 +127,21 @@ public class MyTap extends HorizontalScroll {
 
         float needKg = startScale;
         while (MathUtil.compareTwoNum(needKg, endScale) <= 0) {
-            mScaleList.add(needKg);
+            scaleList.add(needKg);
             needKg = needKg + internalScale;
         }
 
         setOneStep(scaleGap);
 
         setLeftMaxScorll(0);
-        setRightMaxScroll((mScaleList.size()-1)*scaleGap);
+        setRightMaxScroll((scaleList.size() - 1) * scaleGap);
 
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                scrollTo((int) (scaleGap*((currentScale - startScale)/ internalScale)), getScrollY());
+                scrollTo((int) (scaleGap * ((currentScale - startScale) / internalScale)), getScrollY());
             }
-        },200);
+        }, 200);
 
     }
 
@@ -159,9 +159,9 @@ public class MyTap extends HorizontalScroll {
         int endY = 0;
 
         //绘制刻度
-        for (int i = 0; i < mScaleList.size(); i++) {
-            if (startX>getScrollX()&&startX<getScrollX()+getWidth()) {
-                float nowKg = mScaleList.get(i);
+        for (int i = 0; i < scaleList.size(); i++) {
+            if (startX > getScrollX() && startX < getScrollX() + getWidth()) {
+                float nowKg = scaleList.get(i);
                 Paint linePaint;
                 if (isLongLine(nowKg)) {
 
@@ -187,6 +187,7 @@ public class MyTap extends HorizontalScroll {
 
     /**
      * dispatchDraw是绘制子View的方法，onDraw之后调用，这里用来绘制刻度指示器和顶部横线
+     *
      * @param canvas
      */
     @Override
@@ -196,7 +197,7 @@ public class MyTap extends HorizontalScroll {
         canvas.drawLine(getScrollX() + getWidth() / 2, 0, getScrollX() + getWidth() / 2, indicatorLineHeight, indicatorPaint);
 
         //顶部横线
-        canvas.drawLine(0, 0, getScrollX()+getWidth(), 0, topHorizontalLinePaint);
+        canvas.drawLine(0, 0, getScrollX() + getWidth(), 0, topHorizontalLinePaint);
 
 
     }
@@ -224,7 +225,7 @@ public class MyTap extends HorizontalScroll {
         try {
 
             int index = getScrollX() / scaleGap;
-            float nowScale = mScaleList.get(index);
+            float nowScale = scaleList.get(index);
             if (mOuterInterface != null) {
                 mOuterInterface.nowScale(MathUtil.oneDecimal(nowScale));
             }
@@ -238,8 +239,8 @@ public class MyTap extends HorizontalScroll {
         void nowScale(String nowScale);
     }
 
-    public void setOuterInterface(OuterInterface mOuterInterface) {
-        this.mOuterInterface = mOuterInterface;
+    public void setOuterInterface(OuterInterface outerInterface) {
+        this.mOuterInterface = outerInterface;
     }
 
     public void setStartScale(float startScale) {
