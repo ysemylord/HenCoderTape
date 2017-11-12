@@ -15,7 +15,7 @@ Hencoder仿写界面 效果图<br>
         android:layout_width="match_parent"
         android:layout_height="80dp"/>
 ```
-## 要点
+## [要点](http://www.jianshu.com/c/36d7137d34f6)
 + 根据手势滑动内容
 + 左右两侧的最大滑动距离限制
 + 惯性滑动
