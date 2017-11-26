@@ -1,5 +1,5 @@
 # HenCoderTape
-Hencoder仿写界面 效果图<br>
+Hencoder仿写界面(仿写薄荷卷尺效果) 效果图<br>
 
 
 ## 效果图
